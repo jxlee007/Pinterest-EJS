@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "netlify deploy --prod",
+    "build": "nodemon",
     "start": "node ./bin/www",
     "dev": "postcss ./public/src/input.css -o ./public/dist/output.css --watch"
   },
