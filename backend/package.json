@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "npm i",
-    "start": "nodemon app.js",
+    "start": "nodemon index.js",
     "dev": "postcss ./public/src/input.css -o ./public/dist/output.css --watch"
   },
   "dependencies": {
