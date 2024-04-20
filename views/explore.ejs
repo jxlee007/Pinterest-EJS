@@ -1,0 +1,29 @@
+<%- include('./partials/header.ejs') %>
+
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <% if (posts && posts.length > 0) { %>
+        <% posts.forEach(function(post) { %>
+            <div class="relative">
+            <a href="./images/uploads/<%= post.postImage %>">
+                <div class="bg-cover bg-center h-64 rounded-xl" style="background-image: url('/images/uploads/<%= post.postImage %>');">
+                    <div class="absolute bottom-0 left-0 right-0 p-4 bg-black bg-opacity-70 rounded-b-xl">
+                        <span class="flex justify-between">
+                            <h5 class="text-white text-sm mb-2"><%= post.title %></h5>
+                            <h5 class="text-white text-sm mb-2"><%= moment(post.createdAt).format('MMM DD YYYY') %></h5>
+                        </span>
+                        <span class="flex justify-between">
+                            <h6 class="text-gray-300">@<%= post.user.username %></h6>
+                            <h6 class="text-gray-300"><%= post.board ? post.board.name : 'No Board' %></h6>
+                        </span>
+                        
+                    </div>
+                </div>
+            </a> 
+            </div>
+        <% }) %>
+    <% } else { %>
+        <p>No posts available.</p>
+    <% } %>
+</div>
+
+<%- include('./partials/footer.ejs') %>
