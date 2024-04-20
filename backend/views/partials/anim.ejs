@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+
+  <link rel="stylesheet" href="/dist/output.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.0.0/fonts/remixicon.css" />
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+      width: 100%;
+    }
+
+    .marquee {
+      animation: scroll infinite linear 10s;
+    }
+
+    .marquee:nth-child(odd){
+      /* margin-bottom: -200%; */
+      animation-direction: reverse;
+    }
+
+
+    @keyframes scroll {
+      0% {
+        transform: translateY(-100%);
+      }
+
+      100% {
+        transform: translateY(0%);
+      }
+    }
+
+    @media only screen and (max-width: 600px) {
+   .container {
+        width: 100%;
+      }
+    }
+
+  </style>
+
+  
+
+</head>
+
+<body>
+
+  <div class="bg-black absolute overflow-hidden h-screen w-full flex -z-10">
+    <div class="marquee p-2 w-80  h-full">
+        <% for(let i=1; i <=10; i++) { %>
+        <img data-value="<%= i %>" class="my-4 rounded-xl w-full min-w-full" src="https://source.unsplash.com/random?<%= i %>"
+          alt="image<%= i %>">
+        <% } %>
+    </div>
+    <div class="marquee p-2 w-80  h-full">
+        <% for(let i=11; i <=20; i++) { %>
+        <img data-value="<%= i %>" class="my-4 rounded-xl w-full min-w-full" src="https://source.unsplash.com/random?<%= i %>"
+          alt="image<%= i %>">
+        <% } %>
+    </div>
+    <div class="marquee p-2 w-80  h-full">
+        <% for(let i=21; i <=30; i++) { %>
+        <img data-value="<%= i %>" class="my-4 rounded-xl w-full min-w-full" src="https://source.unsplash.com/random?<%= i %>"
+          alt="image<%= i %>">
+        <% } %>
+    </div>
+    <div class="marquee p-2 w-80  h-full">
+        <% for(let i=31; i <=40; i++) { %>
+        <img data-value="<%= i %>" class="my-4 rounded-xl w-full min-w-full" src="https://source.unsplash.com/random?<%= i %>"
+          alt="image<%= i %>">
+        <% } %>
+    </div>
+    <div class="marquee p-2 w-80  h-full">
+        <% for(let i=41; i <=50; i++) { %>
+        <img data-value="<%= i %>" class="my-4 rounded-xl w-full min-w-full" src="https://source.unsplash.com/random?<%= i %>"
+          alt="image<%= i %>">
+        <% } %>
+    </div>
+
+  </div>
