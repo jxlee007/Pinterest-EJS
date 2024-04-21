@@ -28,9 +28,9 @@
             <% user.boards.forEach(function(board) { %>
 
                 <a class="board flex flex-col relative" href="/show/board/<%= board._id %>">
-                    <div class=" w-52 h-40 bg-zinc-200 rounded-lg overflow-hidden">
+                    <div class=" w-52 h-40 bg-zinc-200 rounded-lg overflow-y-hidden">
                         <% if (board.posts.length> 0) { %>
-                            <img src="/images/uploads/<%= board.posts[0].postImage %>" alt="">
+                            <img class="h-full w-full"  src="/images/uploads/<%= board.posts[0].postImage %>" alt="">
                             <% } %>
                     </div>
                     <div class="flex flex-row justify-between ">
