@@ -73,8 +73,8 @@ combine = () => {
         alert('An error occurred while registering the user');
       }
 
-      window.location.replace('/profile'); // Replace with actual redirect URL
       alert('Registered Successfully');
+      window.location.replace('/profile'); // Replace with actual redirect URL
 
     });
   });
