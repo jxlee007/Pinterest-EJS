@@ -28,7 +28,7 @@
             <% user.boards.forEach(function(board) { %>
 
                 <a class="board flex flex-col relative" href="/show/board/<%= board._id %>">
-                    <div class=" w-52 h-40 bg-zinc-200 rounded-lg overflow-hidden">
+                    <div class=" w-52 h-40 bg-zinc-200 rounded-lg overflow-hidden object-cover">
                         <% if (board.posts.length> 0) { %>
                             <img src="/images/uploads/<%= board.posts[0].postImage %>" alt="">
                             <% } %>
