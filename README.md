@@ -33,4 +33,4 @@ This project is a Pinterest clone developed using MongoDB Atlas, EJS, Multer.js,
 - Shoutout To: [The Sheryianscoding School](https://www.youtube.com/@thesheryianscodingschool)
 
 ## Author
-[Jagmohan Singh Malhi]()
+[Jagmohan Singh Malhi](https://www.linkedin.com/in/jagmohan-singh-malhi-a67805243/)
