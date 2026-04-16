@@ -40,22 +40,35 @@ router.get('/login', function (req, res) {
    res.render('register', { error: req.flash('error'), nav: false });
 });
 
-router.get('/explore', async function (req, res, next) {
-   try {
-      const posts = await postModel.find().populate("user").populate("board");
-      const boards = await Board.find();
-      let user = null;
-      if (req.session && req.session.passport && req.session.passport.user) {
-         user = await userModel.findOne({ username: req.session.passport.user });
+router.get('/auth/me', async function (req, res, next) {
+   if (req.isAuthenticated()) {
+      try {
+         const user = await userModel.findOne({ username: req.session.passport.user });
+         res.json({ user });
+      } catch (error) {
+         res.status(500).json({ error: "Server error" });
       }
-      res.render('explore', { user, moment: moment, posts: posts, boards: boards, nav: true });
-   } catch (error) {
-      console.error(error);
-      next(error);
+   } else {
+      res.json({ user: null });
    }
 });
 
-router.get('/profile', isLoggedIn, async function (req, res, next) {
+router.get('/api/explore', async function (req, res, next) {
+   try {
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const posts = await postModel.find().populate("user").populate("board").skip(skip).limit(limit);
+      const boards = await Board.find();
+      res.json({ posts, boards });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+   }
+});
+
+router.get('/api/profile', isLoggedInApi, async function (req, res, next) {
    try {
       const user = await userModel
          .findOne({ username: req.session.passport.user })
@@ -66,15 +79,11 @@ router.get('/profile', isLoggedIn, async function (req, res, next) {
                model: 'Post'
             }
          });
-      console.log(user);
-      res.render('profile', { user, nav: true });
+      res.json({ user });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
-}, function (req, res) {
-   req.flash('error', 'Please register or log in to access this page.');
-   res.redirect('/login');
 });
 
 router.get('/edit', isLoggedIn, async function (req, res, next) {
@@ -87,59 +96,60 @@ router.get('/edit', isLoggedIn, async function (req, res, next) {
    }
 });
 
-router.post('/fileupload', isLoggedIn, upload.single('profile-image'), async function (req, res, next) {
+router.post('/api/fileupload', isLoggedInApi, upload.single('profile-image'), async function (req, res, next) {
    try {
       const user = await userModel.findOne({ username: req.session.passport.user });
       user.profileImage = req.file.filename;
       await user.save();
-      res.redirect('/profile');
+      res.json({ user, message: "Profile image updated" });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
-router.post('/edit', isLoggedIn, async function (req, res, next) {
+router.post('/api/edit', isLoggedInApi, async function (req, res, next) {
    try {
       const user = await userModel.findOne({ username: req.session.passport.user });
-      if (req.body.username.trim() !== '') {
+      if (req.body.username && req.body.username.trim() !== '') {
          user.username = req.body.username;
       }
-      if (req.body.email.trim() !== '') {
+      if (req.body.email && req.body.email.trim() !== '') {
          user.email = req.body.email;
       }
-      if (req.body.fullname.trim() !== '') {
+      if (req.body.fullname && req.body.fullname.trim() !== '') {
          user.fullname = req.body.fullname;
       }
-      if (req.body.fullname.trim() !== '') {
+      if (req.body.phone && req.body.phone.trim() !== '') {
          user.contact = req.body.phone;
       }
       await user.save();
-      res.redirect('/profile');
+      res.json({ user, message: "Profile updated" });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
-router.get('/show/board/:boardId', isLoggedIn, async function (req, res, next) {
+router.get('/api/board/:boardId', isLoggedInApi, async function (req, res, next) {
    try {
-      const user = await userModel.findOne({ username: req.session.passport.user });
       const board = await Board
          .findById(req.params.boardId)
          .populate({
             path: 'posts',
             model: 'Post'
          });
-      console.log(board);
-      res.render('show', { board, user, nav: true });
+      if (!board) {
+         return res.status(404).json({ message: 'Board not found' });
+      }
+      res.json({ board });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
-router.delete('/delete-board/board/:boardId', isLoggedIn, async function (req, res, next) {
+router.delete('/api/delete-board/:boardId', isLoggedInApi, async function (req, res, next) {
    try {
       const board = await Board.findById(req.params.boardId);
       if (!board) {
@@ -149,10 +159,10 @@ router.delete('/delete-board/board/:boardId', isLoggedIn, async function (req, r
       user.boards = user.boards.filter(boardId => !boardId.equals(board._id));
       await user.save();
       await Board.findByIdAndDelete(req.params.boardId);
-      res.redirect('/profile');
+      res.json({ message: "Board deleted" });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
@@ -167,18 +177,35 @@ router.get('/add', isLoggedIn, async function (req, res, next) {
    }
 });
 
-router.get('/feed', isLoggedIn, async function (req, res, next) {
+router.get('/api/feed', isLoggedInApi, async function (req, res, next) {
    try {
-      const user = await userModel.findOne({ username: req.session.passport.user })
-      const posts = await postModel.find({ user: user._id }).populate("user")
-      res.render('feed', { user, posts, moment: moment, nav: true });
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 10;
+      const skip = (page - 1) * limit;
+
+      const user = await userModel.findOne({ username: req.session.passport.user });
+      const posts = await postModel.find({ user: user._id }).populate("user").skip(skip).limit(limit);
+      res.json({ posts });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
-router.post('/createpost', isLoggedIn, upload.single('postimage'), async function (req, res, next) {
+router.get('/api/post/:postId', isLoggedInApi, async function (req, res, next) {
+   try {
+      const post = await postModel.findById(req.params.postId).populate("user").populate("board");
+      if (!post) {
+         return res.status(404).json({ message: 'Post not found' });
+      }
+      res.json({ post });
+   } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Server error" });
+   }
+});
+
+router.post('/api/createpost', isLoggedInApi, upload.single('postimage'), async function (req, res, next) {
    try {
       if (!req.file) {
          return res.status(400).send("No Files were uploaded.");
@@ -186,7 +213,7 @@ router.post('/createpost', isLoggedIn, upload.single('postimage'), async functio
       const user = await userModel.findOne({ username: req.session.passport.user });
       const post = await postModel.create({
          postImage: req.file.filename,
-         desc: req.file.description,
+         desc: req.body.description,
          title: req.body.title,
          user: user._id,
          board: req.body.board,
@@ -194,16 +221,18 @@ router.post('/createpost', isLoggedIn, upload.single('postimage'), async functio
       user.posts.push(post._id);
       await user.save();
       const board = await Board.findById(req.body.board);
-      board.posts.push(post._id);
-      await board.save();
-      res.redirect("/profile");
+      if (board) {
+         board.posts.push(post._id);
+         await board.save();
+      }
+      res.json({ post, message: "Post created successfully" });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
-router.delete('/delete-post/:postId', isLoggedIn, async function (req, res, next) {
+router.delete('/api/delete-post/:postId', isLoggedInApi, async function (req, res, next) {
    try {
       const post = await postModel.findById(req.params.postId);
       if (!post) {
@@ -216,37 +245,37 @@ router.delete('/delete-post/:postId', isLoggedIn, async function (req, res, next
       res.json({ message: 'Post deleted successfully' });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
-router.post('/board', isLoggedIn, async function (req, res, next) {
+router.post('/api/board', isLoggedInApi, async function (req, res, next) {
    try {
       const board = await Board.create({ name: req.body.boardname });
       const user = await userModel.findOne({ username: req.session.passport.user });
       user.boards.push(board._id);
       await user.save();
-      res.redirect('/profile');
+      res.json({ board, message: "Board created successfully" });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
-router.post('/addposttoboard', isLoggedIn, async function (req, res, next) {
+router.post('/api/addposttoboard', isLoggedInApi, async function (req, res, next) {
    try {
       const board = await Board.findById(req.body.board);
       board.posts.push(req.body.post);
       await board.save();
-      res.redirect('/board');
+      res.json({ message: "Post added to board" });
    } catch (error) {
       console.error(error);
-      next(error);
+      res.status(500).json({ error: "Server error" });
    }
 });
 
-router.post('/register', function (req, res, next) {
-   const { username, email, fullname, contact, password } = req.body.combinedData;
+router.post('/api/register', function (req, res, next) {
+   const { username, email, fullname, contact, password } = req.body;
    const userdata = new userModel({
       username,
       email,
@@ -256,24 +285,29 @@ router.post('/register', function (req, res, next) {
    userModel.register(userdata, password, (err, registeredUser) => {
       if (err) {
          console.error('Error registering user:', err);
-         return res.status(500).json({ error: 'Registration failed' });
+         return res.status(500).json({ error: 'Registration failed', details: err.message });
       }
       passport.authenticate('local')(req, res, () => {
-         res.redirect('/profile');
+         res.json({ message: "Registration successful", user: registeredUser });
       });
    });
 });
 
-router.post('/login', passport.authenticate('local', {
-   successRedirect: '/profile',
-   failureRedirect: "/login",
-   failureFlash: true,
-}), function (req, res) {});
+router.post('/api/login', function(req, res, next) {
+   passport.authenticate('local', function(err, user, info) {
+      if (err) { return res.status(500).json({ error: "Server error" }); }
+      if (!user) { return res.status(401).json({ error: "Invalid credentials" }); }
+      req.logIn(user, function(err) {
+         if (err) { return res.status(500).json({ error: "Server error" }); }
+         return res.json({ message: "Login successful", user });
+      });
+   })(req, res, next);
+});
 
-router.get('/logout', function (req, res, next) {
+router.post('/api/logout', function (req, res, next) {
    req.logout(function (err) {
-      if (err) { return next(err); }
-      res.redirect("/login");
+      if (err) { return res.status(500).json({ error: "Server error" }); }
+      res.json({ message: "Logout successful" });
    });
 });
 
@@ -283,5 +317,12 @@ function isLoggedIn(req, res, next) {
    }
    res.redirect("/login");
 };
+
+function isLoggedInApi(req, res, next) {
+   if (req.isAuthenticated()) {
+      return next();
+   }
+   res.status(401).json({ error: "Unauthorized" });
+}
 
 module.exports = router;
