@@ -219,7 +219,7 @@ router.get('/api/feed', apiAuthLimiter, isLoggedInApi, async function (req, res,
    }
 });
 
-router.get('/api/post/:postId', isLoggedInApi, async function (req, res, next) {
+router.get('/api/post/:postId', apiAuthLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const post = await postModel.findById(req.params.postId).populate("user").populate("board");
       if (!post) {
