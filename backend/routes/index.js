@@ -9,6 +9,12 @@ const upload = require('./multer');
 const passport = require('passport');
 const rateLimit = require('express-rate-limit');
 
+const apiAuthLimiter = rateLimit({
+   windowMs: 15 * 60 * 1000,
+   max: 100,
+   message: { error: "Too many requests, please try again later." }
+});
+
 const localStrategy = require("passport-local");
 const users = require('./users');
 passport.use(new localStrategy(userModel.authenticate()));
@@ -76,7 +82,7 @@ router.get('/api/explore', async function (req, res, next) {
    }
 });
 
-router.get('/api/profile', isLoggedInApi, async function (req, res, next) {
+router.get('/api/profile', apiAuthLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const user = await userModel
          .findOne({ username: req.session.passport.user })
