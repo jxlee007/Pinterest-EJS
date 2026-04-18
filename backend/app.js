@@ -11,11 +11,19 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 
 
+require('dotenv').config();
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const passport = require('passport');
+const cors = require('cors');
 
 var app = express();
+
+// CORS setup for Next.js frontend
+app.use(cors({
+  origin: "http://localhost:3001",
+  credentials: true
+}));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -26,7 +34,12 @@ app.use(flash()); // flash
 app.use(expressSession({
   resave:false,
   saveUninitialized:false,
-  secret : "got shit done",
+  secret : process.env.SESSION_SECRET || "got shit done",
+  cookie: {
+    sameSite: "lax",
+    secure: false,
+    httpOnly: true
+  }
 }));
 //  setup passport
 app.use(passport.initialize());
