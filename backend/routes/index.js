@@ -122,7 +122,13 @@ router.post('/api/fileupload', isLoggedInApi, upload.single('profile-image'), as
    }
 });
 
-router.post('/api/edit', isLoggedInApi, async function (req, res, next) {
+const editApiLimiter = rateLimit({
+   windowMs: 15 * 60 * 1000, // 15 minutes
+   max: 100,
+   message: { error: "Too many requests, please try again later." }
+});
+
+router.post('/api/edit', editApiLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const user = await userModel.findOne({ username: req.session.passport.user });
       if (req.body.username && req.body.username.trim() !== '') {
