@@ -7,10 +7,18 @@ const Board = require("./board");
 const moment = require('moment');
 const upload = require('./multer');
 const passport = require('passport');
+const rateLimit = require('express-rate-limit');
 
 const localStrategy = require("passport-local");
 const users = require('./users');
 passport.use(new localStrategy(userModel.authenticate()));
+
+const authMeLimiter = rateLimit({
+   windowMs: 15 * 60 * 1000, // 15 minutes
+   max: 100, // limit each IP to 100 requests per windowMs
+   standardHeaders: true,
+   legacyHeaders: false
+});
 
 router.get('/', function (req, res, next) {
    res.render('welcome', { nav: false });
@@ -40,7 +48,7 @@ router.get('/login', function (req, res) {
    res.render('register', { error: req.flash('error'), nav: false });
 });
 
-router.get('/auth/me', async function (req, res, next) {
+router.get('/auth/me', authMeLimiter, async function (req, res, next) {
    if (req.isAuthenticated()) {
       try {
          const user = await userModel.findOne({ username: req.session.passport.user });
