@@ -117,7 +117,7 @@ router.get('/edit', isLoggedIn, async function (req, res, next) {
    }
 });
 
-router.post('/api/fileupload', isLoggedInApi, upload.single('profile-image'), async function (req, res, next) {
+router.post('/api/fileupload', apiAuthLimiter, isLoggedInApi, upload.single('profile-image'), async function (req, res, next) {
    try {
       const user = await userModel.findOne({ username: req.session.passport.user });
       user.profileImage = req.file.filename;
