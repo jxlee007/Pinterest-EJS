@@ -31,10 +31,23 @@ export default function UploadBox() {
 
   const handleFileChange = (e) => {
     const selectedFile = e.target.files[0];
-    if (selectedFile) {
-      setFile(selectedFile);
-      setPreview(URL.createObjectURL(selectedFile));
+    if (!selectedFile) return;
+
+    if (!selectedFile.type || !selectedFile.type.startsWith('image/')) {
+      alert('Please select a valid image file.');
+      return;
     }
+
+    setFile(selectedFile);
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result === 'string' && result.startsWith('data:image/')) {
+        setPreview(result);
+      }
+    };
+    reader.readAsDataURL(selectedFile);
   };
 
   const handleSubmit = async (e) => {
