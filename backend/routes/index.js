@@ -276,7 +276,7 @@ router.delete('/api/delete-post/:postId', apiWriteLimiter, isLoggedInApi, async 
    }
 });
 
-router.post('/api/board', isLoggedInApi, async function (req, res, next) {
+router.post('/api/board', apiAuthLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const board = await Board.create({ name: req.body.boardname });
       const user = await userModel.findOne({ username: req.session.passport.user });
@@ -289,7 +289,7 @@ router.post('/api/board', isLoggedInApi, async function (req, res, next) {
    }
 });
 
-router.post('/api/addposttoboard', isLoggedInApi, async function (req, res, next) {
+router.post('/api/addposttoboard', apiAuthLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const board = await Board.findById(req.body.board);
       board.posts.push(req.body.post);
@@ -301,7 +301,7 @@ router.post('/api/addposttoboard', isLoggedInApi, async function (req, res, next
    }
 });
 
-router.post('/api/register', function (req, res, next) {
+router.post('/api/register', apiAuthLimiter, function (req, res, next) {
    const { username, email, fullname, contact, password } = req.body;
    const userdata = new userModel({
       username,
@@ -320,7 +320,7 @@ router.post('/api/register', function (req, res, next) {
    });
 });
 
-router.post('/api/login', function(req, res, next) {
+router.post('/api/login', apiAuthLimiter, function(req, res, next) {
    passport.authenticate('local', function(err, user, info) {
       if (err) { return res.status(500).json({ error: "Server error" }); }
       if (!user) { return res.status(401).json({ error: "Invalid credentials" }); }
@@ -331,7 +331,7 @@ router.post('/api/login', function(req, res, next) {
    })(req, res, next);
 });
 
-router.post('/api/logout', function (req, res, next) {
+router.post('/api/logout', apiAuthLimiter, function (req, res, next) {
    req.logout(function (err) {
       if (err) { return res.status(500).json({ error: "Server error" }); }
       res.json({ message: "Logout successful" });
