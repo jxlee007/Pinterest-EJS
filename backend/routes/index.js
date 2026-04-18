@@ -158,7 +158,7 @@ router.post('/api/edit', editApiLimiter, isLoggedInApi, async function (req, res
    }
 });
 
-router.get('/api/board/:boardId', isLoggedInApi, async function (req, res, next) {
+router.get('/api/board/:boardId', apiAuthLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const board = await Board
          .findById(req.params.boardId)
