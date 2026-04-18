@@ -17,6 +17,13 @@ const apiAuthLimiter = rateLimit({
 
 const localStrategy = require("passport-local");
 const users = require('./users');
+
+const apiWriteLimiter = rateLimit({
+   windowMs: 15 * 60 * 1000, // 15 minutes
+   max: 100, // limit each IP to 100 write requests per windowMs
+   standardHeaders: true,
+   legacyHeaders: false,
+});
 passport.use(new localStrategy(userModel.authenticate()));
 
 const authMeLimiter = rateLimit({
@@ -225,7 +232,7 @@ router.get('/api/post/:postId', isLoggedInApi, async function (req, res, next) {
    }
 });
 
-router.post('/api/createpost', isLoggedInApi, upload.single('postimage'), async function (req, res, next) {
+router.post('/api/createpost', apiWriteLimiter, isLoggedInApi, upload.single('postimage'), async function (req, res, next) {
    try {
       if (!req.file) {
          return res.status(400).send("No Files were uploaded.");
@@ -252,7 +259,7 @@ router.post('/api/createpost', isLoggedInApi, upload.single('postimage'), async 
    }
 });
 
-router.delete('/api/delete-post/:postId', isLoggedInApi, async function (req, res, next) {
+router.delete('/api/delete-post/:postId', apiWriteLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const post = await postModel.findById(req.params.postId);
       if (!post) {
