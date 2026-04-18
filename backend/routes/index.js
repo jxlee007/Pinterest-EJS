@@ -176,7 +176,7 @@ router.get('/api/board/:boardId', apiAuthLimiter, isLoggedInApi, async function 
    }
 });
 
-router.delete('/api/delete-board/:boardId', isLoggedInApi, async function (req, res, next) {
+router.delete('/api/delete-board/:boardId', apiAuthLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const board = await Board.findById(req.params.boardId);
       if (!board) {
