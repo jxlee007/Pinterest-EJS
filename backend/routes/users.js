@@ -1,11 +1,14 @@
 const mongoose = require('mongoose');
 const plm = require('passport-local-mongoose');
 
-// MongoDB Atlas connection string
-const atlasConnectionURI = "mongodb+srv://admin:123@cluster0.xozpyua.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0";
+// Setup MongoDB connection
+const connectionURI = process.env.MONGO_CONNECTION || "mongodb://127.0.0.1:27017/pinterest-clone";
 
-// Setup MongoDB Atlas connection
-mongoose.connect(atlasConnectionURI);
+mongoose.connect(connectionURI).then(() => {
+  console.log("Connected to MongoDB");
+}).catch(err => {
+  console.error("Failed to connect to MongoDB", err);
+});
 
 const userSchema = new mongoose.Schema({
   fullname: String,
