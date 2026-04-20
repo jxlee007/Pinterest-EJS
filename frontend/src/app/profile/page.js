@@ -80,11 +80,11 @@ export default function ProfilePage() {
   if (!user || !profile) return null;
 
   return (
-    <div className="profile w-full min-h-screen bg-zinc-800 text-white pt-1 relative">
+    <div className="profile w-full min-h-[calc(100vh-60px)] bg-zinc-800 text-white pt-1 relative">
       <div className='profdets flex flex-col items-center mt-10'>
         <div className="relative">
           <label htmlFor="fileInput" className="cursor-pointer w-10 h-10 absolute bottom-0 right-0 rounded-full flex items-center justify-center bg-zinc-200 z-10">
-             <span className="text-zinc-800 text-xl">&#9998;</span> {/* Pencil icon replacement */}
+            <i className="text-zinc-800 ri-pencil-fill"></i>
           </label>
           <input type="file" id="fileInput" className="hidden" onChange={handleImageUpload} />
 
@@ -108,18 +108,11 @@ export default function ProfilePage() {
             {profile.fullname || profile.username}
         </h1>
         <h3 className="text-md mt-2">@{profile.username}</h3>
-        <Link href="/edit" className="mt-4 px-4 py-2 bg-zinc-600 rounded-full text-sm font-semibold hover:bg-zinc-500">Edit Profile</Link>
       </div>
 
-      <div className="flex justify-center mt-4">
-        <button onClick={() => setShowBoardModal(true)} className="px-4 py-2 bg-red-600 rounded-full text-white font-semibold hover:bg-red-700">
-          Create New Board
-        </button>
-      </div>
-
-      <div className="boards flex flex-wrap justify-center gap-10 px-10 mt-10 pb-10">
+      <div className="boards flex flex-wrap gap-10 px-10 mt-10">
           {profile.boards && profile.boards.map(board => (
-              <Link key={board._id} href={`/show/board/${board._id}`} className="board flex flex-col relative w-52">
+              <Link key={board._id} href={`/show/board/${board._id}`} className="board flex flex-col relative">
                   <div className="w-52 h-40 bg-zinc-200 rounded-lg overflow-hidden flex items-center justify-center">
                       {board.posts && board.posts.length > 0 ? (
                           <Image
@@ -131,55 +124,65 @@ export default function ProfilePage() {
                             unoptimized
                           />
                       ) : (
-                         <span className="text-gray-500">Empty</span>
+                         <span className="text-gray-500"></span>
                       )}
                   </div>
-                  <div className="flex flex-row justify-between items-center mt-3">
+                  <div className="flex flex-row justify-between">
                       <span>
-                          <h3 className="text-xl font-semibold truncate w-32">{board.name}</h3>
+                          <h3 className="text-xl font-semibold mt-3">{board.name}</h3>
                           <h5 className="text-sm font-medium opacity-60">
                               {(board.posts && board.posts.length) || 0} Pins
                           </h5>
                       </span>
                       <button
                         onClick={(e) => handleDeleteBoard(e, board._id)}
-                        className="delete-board z-10 px-2 py-1 rounded-full bg-red-600 text-white font-semibold text-sm hover:bg-red-700"
+                        className="delete-board z-10 px-2 py-1 rounded-full bg-red-600 text-3xl font-semibold mt-3"
                       >
-                          Delete
+                          <i className="ri-delete-bin-7-line"></i>
                       </button>
                   </div>
               </Link>
           ))}
-
-          {(!profile.boards || profile.boards.length === 0) && (
-             <p className="text-gray-400">No boards created yet.</p>
-          )}
       </div>
 
       {showBoardModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <form onSubmit={handleCreateBoard} className="bg-white text-black w-1/3 p-6 rounded-3xl">
-              <h1 className="text-2xl mb-2 font-semibold">Create New Board</h1>
-              <hr className="border-gray-300 mb-6" />
+        <div id="board" className="absolute inset-y-0 bg-black/50 w-full flex items-center justify-center z-50">
+          <form onSubmit={handleCreateBoard} className="bg-white text-black border-2 border-black -mt-40 w-1/3 p-4 rounded-3xl">
+              <h1 className="text-2xl mb-2">Create New Board</h1>
+              <hr className="border-1 border-black mb-6" />
 
-              <label htmlFor="boardname" className="block mb-2 font-medium">Board Name</label>
-              <input
-                type="text"
-                id="boardname"
-                value={boardName}
-                onChange={(e) => setBoardName(e.target.value)}
-                className="w-full bg-gray-200 border-transparent rounded-lg text-sm px-4 py-3 mb-8 focus:ring-2 focus:ring-blue-500 outline-none"
-                placeholder="Enter name"
-                required
-              />
+              <label htmlFor="boardname" className="m-2 block">Board Name</label>
+              <div className="relative mb-12">
+                <input
+                  type="text"
+                  id="boardname"
+                  value={boardName}
+                  onChange={(e) => setBoardName(e.target.value)}
+                  className="peer py-3 px-4 ps-11 block w-full bg-gray-200 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none outline-none"
+                  placeholder="Enter name"
+                  required
+                />
+                <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-4 peer-disabled:opacity-50 peer-disabled:pointer-events-none">
+                  <svg className="flex-shrink-0 w-4 h-4 text-black" width="30" height="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                      <path d="M3 13H11V3H3V13ZM3 21H11V15H3V21ZM13 21H21V11H13V21ZM13 3V9H21V3H13Z" fill="currentColor"></path>
+                  </svg>
+                </div>
+              </div>
 
-              <div className="flex justify-end gap-3">
-                  <button type="submit" className="bg-red-600 hover:bg-red-700 rounded-full text-white py-2 px-6 font-semibold transition">Save</button>
-                  <button type="button" onClick={() => setShowBoardModal(false)} className="bg-gray-500 hover:bg-gray-600 rounded-full text-white py-2 px-6 font-semibold transition">Cancel</button>
+              <div className="gap-3 flex justify-end">
+                  <button type="submit" className="bg-red-700 rounded-full text-white py-2 px-6">Save</button>
+                  <button type="button" onClick={() => setShowBoardModal(false)} className="bg-red-700 rounded-full text-white py-2 px-6">Cancel</button>
               </div>
           </form>
         </div>
       )}
+
+      {/* Button to open the create board modal, we place it somewhere accessible or let the Navbar 'Create Board' open it. We'll add a floating button for easy access matching original layout expectation if needed, or rely on Navbar. Let's add a simple one just in case */}
+      <div className="fixed bottom-10 right-10">
+        <button onClick={() => setShowBoardModal(true)} className="w-14 h-14 bg-red-600 rounded-full text-white text-3xl shadow-lg hover:bg-red-700 flex items-center justify-center">
+          +
+        </button>
+      </div>
 
     </div>
   );

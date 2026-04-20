@@ -5,10 +5,11 @@ import { postApi } from '@/services/post.api';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 
-export default function PostDetailPage() {
-  const { id } = useParams();
+export default function ShowPostPage() {
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
+  const params = useParams();
+  const { id } = params;
 
   useEffect(() => {
     if (id) {
@@ -27,49 +28,37 @@ export default function PostDetailPage() {
     }
   };
 
+  const formatDate = (dateString) => {
+    if (!dateString) return '';
+    const options = { year: 'numeric', month: 'long', day: 'numeric' };
+    return new Date(dateString).toLocaleDateString('en-US', options);
+  };
+
   if (loading) return <div className="text-center mt-20 text-white">Loading...</div>;
   if (!post) return <div className="text-center mt-20 text-white">Post not found.</div>;
 
   return (
-    <div className="container mx-auto px-10 py-8 flex justify-center">
-      <div className="bg-white rounded-3xl flex flex-col md:flex-row overflow-hidden max-w-4xl w-full text-black">
-        <div className="w-full md:w-1/2">
-          <Image
-            src={`http://localhost:5000/images/uploads/${post.postImage}`}
-            alt={post.title}
-            width={600}
-            height={600}
-            className="object-cover w-full h-full min-h-[400px]"
-            unoptimized
-          />
-        </div>
-        <div className="w-full md:w-1/2 p-8">
-          <h1 className="text-3xl font-bold mb-4">{post.title}</h1>
-          <p className="text-gray-700 mb-6">{post.desc}</p>
-          <div className="flex items-center gap-3">
-            {post.user && (
-              <>
-                <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
-                  {post.user.profileImage ? (
-                    <Image
-                      src={`http://localhost:5000/images/uploads/${post.user.profileImage}`}
-                      alt={post.user.username}
-                      width={48}
-                      height={48}
-                      className="object-cover w-full h-full"
-                      unoptimized
-                    />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center font-bold">
-                      {post.user.username.charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                </div>
-                <span className="font-semibold">{post.user.username}</span>
-              </>
-            )}
+    <div className="container mx-auto px-10 py-8 bg-white text-black min-h-screen">
+      <h1 className="text-3xl font-bold mb-8">Post Details</h1>
+      <div className="flex flex-col md:flex-row md:space-x-8">
+          <div className="w-full md:w-1/2">
+              <Image
+                src={`http://localhost:5000/images/uploads/${post.postImage}`}
+                alt="Post Image"
+                className="w-full rounded-lg mb-4 object-cover"
+                width={800}
+                height={600}
+                unoptimized
+              />
+              {/* Using desc as content since post schema usually has desc */}
+              <p className="text-gray-600">{post.desc}</p>
           </div>
-        </div>
+          <div className="w-full md:w-1/2">
+              <h2 className="text-2xl font-bold mb-4">{post.title} post</h2>
+              <p className="text-gray-800 mb-4">{post.desc}</p>
+              <p className="text-gray-600">Author: {post.user?.username || 'Unknown'}</p>
+              <p className="text-gray-600">Published on: {formatDate(post.createdAt)}</p>
+          </div>
       </div>
     </div>
   );
