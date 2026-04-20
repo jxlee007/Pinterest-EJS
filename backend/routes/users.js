@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const plm = require('passport-local-mongoose');
 
 // Setup MongoDB connection
-const connectionURI = process.env.MONGO_CONNECTION || "mongodb://127.0.0.1:27017/pinterest-clone";
+const connectionURI = process.env.MONGO_URI || "mongodb://127.0.0.1:27017/pinterest-clone";
 
 mongoose.connect(connectionURI).then(() => {
   console.log("Connected to MongoDB");
@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-});
+}, { collection: 'PINusers' });
 
 userSchema.plugin(plm);
 

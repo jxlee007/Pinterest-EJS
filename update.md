@@ -169,79 +169,10 @@ Start in this order:
 4. 👉 Recommendation system (main feature)
 
 ---
- 
-frontend/
-├── src/
-│   ├── app/
-│   │   ├── layout.js
-│   │   ├── page.js                  # Home feed
-│   │   │
-│   │   ├── upload/
-│   │   │   └── page.js              # Upload post (AI trigger)
-│   │   │
-│   │   ├── post/
-│   │   │   └── [id]/
-│   │   │       └── page.js          # Single post view
-│   │   │
-│   │   ├── profile/
-│   │   │   └── page.js
-│   │   │
-│   │   ├── explore/
-│   │   │   └── page.js              # Search / discovery
-│   │   │
-│   │   └── api/                     # (optional if using Next API)
-│   │
-│   ├── components/
-│   │   ├── feed/
-│   │   │   ├── FeedGrid.jsx
-│   │   │   ├── PostCard.jsx
-│   │   │   └── InfiniteScroll.jsx
-│   │   │
-│   │   ├── upload/
-│   │   │   ├── UploadBox.jsx
-│   │   │   ├── PreviewImage.jsx
-│   │   │   └── CaptionBox.jsx
-│   │   │
-│   │   ├── ai/
-│   │   │   ├── CaptionBadge.jsx
-│   │   │   ├── TagsList.jsx
-│   │   │   └── SafetyWarning.jsx
-│   │   │
-│   │   ├── ui/
-│   │   │   ├── Button.jsx
-│   │   │   ├── Modal.jsx
-│   │   │   └── Loader.jsx
-│   │
-│   ├── services/
-│   │   ├── api.js                   # backend calls
-│   │   ├── postService.js
-│   │   ├── aiService.js             # AI integration layer
-│   │
-│   ├── hooks/
-│   │   ├── useInfiniteScroll.js
-│   │   ├── useUploadPost.js
-│   │   └── useAI.js
-│   │
-│   ├── utils/
-│   │   ├── formatDate.js
-│   │   ├── compressImage.js
-│   │   └── constants.js
-│   │
-│   ├── context/
-│   │   ├── AuthContext.js
-│   │   ├── FeedContext.js
-│   │
-│   ├── styles/
-│   │   └── globals.css
-│   │
-│   └── lib/
-│       ├── db.js
-│       └── helpers.js
-│
-├── public/
-│   ├── images/
-│   └── icons/
-│
-├── next.config.js
-├── package.json
-└── tailwind.config.js
+
+# 👍 If you want next step
+
+I can:
+
+* Show **how to build recommendation system (simple version)**
+* OR give **exact backend logic for all 4 features**

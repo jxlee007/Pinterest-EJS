@@ -1,47 +1,37 @@
 #!/bin/bash
 
-# Function to stop all background processes when the script is exited
+# Colors for output
+GREEN='\033[0;32m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+echo -e "${BLUE}Cleaning up existing processes on ports 3000 and 3001...${NC}"
+fuser -k 3000/tcp 2>/dev/null
+fuser -k 3001/tcp 2>/dev/null
+
+echo -e "${GREEN}Starting Backend on port 3000...${NC}"
+cd backend
+npm start &
+BACKEND_PID=$!
+
+echo -e "${GREEN}Starting Frontend on port 3001...${NC}"
+cd ../frontend
+PORT=3001 npm run dev &
+FRONTEND_PID=$!
+
+# Function to stop both processes
 cleanup() {
-    echo -e "\n\033[1;31mStopping all services...\033[0m"
-    # Kill all background jobs started by this script
-    kill $(jobs -p) 2>/dev/null
+    echo -e "\n${BLUE}Shutting down...${NC}"
+    kill $BACKEND_PID 2>/dev/null
+    kill $FRONTEND_PID 2>/dev/null
+    echo -e "${GREEN}Done.${NC}"
     exit
 }
 
-# Trap SIGINT (Ctrl+C) and SIGTERM
+# Trap Ctrl+C (SIGINT) and other termination signals
 trap cleanup SIGINT SIGTERM
 
-echo -e "\033[1;34mStarting Pinterest-EJS Development Environment\033[0m"
-echo "------------------------------------------------"
+echo -e "${BLUE}Services are running. Press Ctrl+C to stop both.${NC}"
 
-# Function to check for node_modules
-check_dependencies() {
-    if [ ! -d "$1/node_modules" ]; then
-        echo -e "\033[1;33mWarning: node_modules not found in $1. Attempting to install...\033[0m"
-        (cd "$1" && npm install)
-    fi
-}
-
-# Check and start Backend
-echo -e "\033[1;32m[Backend]\033[0m Starting server on port 3000 and PostCSS watcher..."
-check_dependencies "backend"
-cd backend
-PORT=3000 npm start > /dev/null 2>&1 &
-npm run dev > /dev/null 2>&1 &
-cd ..
-
-# Check and start Localhost
-echo -e "\033[1;32m[Localhost]\033[0m Starting server on port 3001 and PostCSS watcher..."
-check_dependencies "localhost"
-cd localhost
-PORT=3001 npm start > /dev/null 2>&1 &
-npm run dev > /dev/null 2>&1 &
-cd ..
-
-echo "------------------------------------------------"
-echo -e "\033[1;36mBackend: http://localhost:3000\033[0m"
-echo -e "\033[1;36mLocalhost: http://localhost:3001\033[0m"
-echo -e "\033[1;33mPress Ctrl+C to stop all services.\033[0m"
-
-# Wait for all background processes to finish (or for a trap)
-wait
+# Wait for background processes
+wait $BACKEND_PID $FRONTEND_PID

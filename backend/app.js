@@ -11,13 +11,14 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 
 
-require('dotenv').config();
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const passport = require('passport');
 const cors = require('cors');
 
 var app = express();
+app.set('trust proxy', 1);
 
 // CORS setup for Next.js frontend
 app.use(cors({

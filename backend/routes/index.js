@@ -34,7 +34,7 @@ const authMeLimiter = rateLimit({
 });
 
 router.get('/', function (req, res, next) {
-   res.render('welcome', { nav: false });
+   res.redirect('http://localhost:3001');
 });
 
 router.get('/sample', function (req, res, next) {
@@ -62,16 +62,7 @@ router.get('/login', function (req, res) {
 });
 
 router.get('/auth/me', authMeLimiter, async function (req, res, next) {
-   if (req.isAuthenticated()) {
-      try {
-         const user = await userModel.findOne({ username: req.session.passport.user });
-         res.json({ user });
-      } catch (error) {
-         res.status(500).json({ error: "Server error" });
-      }
-   } else {
-      res.json({ user: null });
-   }
+   res.json({ user: req.user || null });
 });
 
 router.get('/api/explore', async function (req, res, next) {
@@ -92,7 +83,7 @@ router.get('/api/explore', async function (req, res, next) {
 router.get('/api/profile', apiAuthLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const user = await userModel
-         .findOne({ username: req.session.passport.user })
+         .findById(req.user._id)
          .populate({
             path: 'boards',
             populate: {
@@ -109,8 +100,7 @@ router.get('/api/profile', apiAuthLimiter, isLoggedInApi, async function (req, r
 
 router.get('/edit', isLoggedIn, async function (req, res, next) {
    try {
-      const user = await userModel.findOne({ username: req.session.passport.user });
-      res.render('edit', { user, nav: false });
+      res.render('edit', { user: req.user, nav: false });
    } catch (error) {
       console.error(error);
       next(error);
@@ -119,7 +109,7 @@ router.get('/edit', isLoggedIn, async function (req, res, next) {
 
 router.post('/api/fileupload', apiAuthLimiter, isLoggedInApi, upload.single('profile-image'), async function (req, res, next) {
    try {
-      const user = await userModel.findOne({ username: req.session.passport.user });
+      const user = req.user;
       user.profileImage = req.file.filename;
       await user.save();
       res.json({ user, message: "Profile image updated" });
@@ -137,7 +127,7 @@ const editApiLimiter = rateLimit({
 
 router.post('/api/edit', editApiLimiter, isLoggedInApi, async function (req, res, next) {
    try {
-      const user = await userModel.findOne({ username: req.session.passport.user });
+      const user = req.user;
       if (req.body.username && req.body.username.trim() !== '') {
          user.username = req.body.username;
       }
@@ -182,7 +172,7 @@ router.delete('/api/delete-board/:boardId', apiAuthLimiter, isLoggedInApi, async
       if (!board) {
          return res.status(404).send({ message: 'Board not found' });
       }
-      const user = await userModel.findOne({ username: req.session.passport.user });
+      const user = req.user;
       user.boards = user.boards.filter(boardId => !boardId.equals(board._id));
       await user.save();
       await Board.findByIdAndDelete(req.params.boardId);
@@ -195,7 +185,7 @@ router.delete('/api/delete-board/:boardId', apiAuthLimiter, isLoggedInApi, async
 
 router.get('/add', isLoggedIn, async function (req, res, next) {
    try {
-      const user = await userModel.findOne({ username: req.session.passport.user })
+      const user = await userModel.findById(req.user._id)
          .populate("boards");
       res.render('add', { user, nav: true });
    } catch (error) {
@@ -210,8 +200,7 @@ router.get('/api/feed', apiAuthLimiter, isLoggedInApi, async function (req, res,
       const limit = parseInt(req.query.limit) || 10;
       const skip = (page - 1) * limit;
 
-      const user = await userModel.findOne({ username: req.session.passport.user });
-      const posts = await postModel.find({ user: user._id }).populate("user").skip(skip).limit(limit);
+      const posts = await postModel.find({ user: req.user._id }).populate("user").skip(skip).limit(limit);
       res.json({ posts });
    } catch (error) {
       console.error(error);
@@ -237,7 +226,7 @@ router.post('/api/createpost', apiWriteLimiter, isLoggedInApi, upload.single('po
       if (!req.file) {
          return res.status(400).send("No Files were uploaded.");
       }
-      const user = await userModel.findOne({ username: req.session.passport.user });
+      const user = req.user;
       const post = await postModel.create({
          postImage: req.file.filename,
          desc: req.body.description,
@@ -265,7 +254,7 @@ router.delete('/api/delete-post/:postId', apiWriteLimiter, isLoggedInApi, async 
       if (!post) {
          return res.status(404).json({ message: 'Post not found' });
       }
-      const user = await userModel.findOne({ username: req.session.passport.user });
+      const user = req.user;
       user.posts = user.posts.filter(postId => !postId.equals(post._id));
       await user.save();
       await postModel.findByIdAndDelete(req.params.postId);
@@ -279,7 +268,7 @@ router.delete('/api/delete-post/:postId', apiWriteLimiter, isLoggedInApi, async 
 router.post('/api/board', apiAuthLimiter, isLoggedInApi, async function (req, res, next) {
    try {
       const board = await Board.create({ name: req.body.boardname });
-      const user = await userModel.findOne({ username: req.session.passport.user });
+      const user = req.user;
       user.boards.push(board._id);
       await user.save();
       res.json({ board, message: "Board created successfully" });
