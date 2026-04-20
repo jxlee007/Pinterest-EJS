@@ -20,17 +20,17 @@ const cors = require('cors');
 var app = express();
 app.set('trust proxy', 1);
 
-// 1. Move Body Parsers to the TOP (before routes/passport)
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-
-// 2. Updated CORS (Match your Next.js Port!)
+// 1. Updated CORS (Match your Next.js Port!)
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "http://localhost:3001",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]
 }));
+
+// 2. Move Body Parsers to the TOP (before routes/passport)
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));

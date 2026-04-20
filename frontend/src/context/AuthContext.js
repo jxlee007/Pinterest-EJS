@@ -12,11 +12,14 @@ export const AuthProvider = ({ children }) => {
     const fetchUser = async () => {
       try {
         const response = await authApi.getMe();
-        if (response.data.user) {
+        if (response.data && response.data.user) {
           setUser(response.data.user);
+        } else {
+          setUser(null);
         }
       } catch (error) {
         console.error("Failed to fetch user", error);
+        setUser(null);
       } finally {
         setLoading(false);
       }
