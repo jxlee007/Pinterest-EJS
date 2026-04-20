@@ -20,10 +20,16 @@ const cors = require('cors');
 var app = express();
 app.set('trust proxy', 1);
 
-// CORS setup for Next.js frontend
+// 1. Move Body Parsers to the TOP (before routes/passport)
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+
+// 2. Updated CORS (Match your Next.js Port!)
 app.use(cors({
-  origin: "http://localhost:3001",
-  credentials: true
+  origin: "http://localhost:3000",
+  credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE"],
+  allowedHeaders: ["Content-Type", "Authorization"]
 }));
 
 // view engine setup
@@ -31,15 +37,16 @@ app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'ejs');
 
 app.use(flash()); // flash
-// express session
+// 3. Fix Session Cookie for Local Development
 app.use(expressSession({
-  resave:false,
-  saveUninitialized:false,
-  secret : process.env.SESSION_SECRET || "got shit done",
+  resave: false,
+  saveUninitialized: false,
+  secret: process.env.SESSION_SECRET || "got shit done",
   cookie: {
-    sameSite: "lax",
-    secure: false,
-    httpOnly: true
+    sameSite: "lax", // Allows cookie to be sent across localhost ports
+    secure: false,   // Must be false for http://localhost
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
 //  setup passport
@@ -50,8 +57,7 @@ passport.deserializeUser(usersRouter.deserializeUser());
 
 app.use(methodOverride('_method'));
 app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 

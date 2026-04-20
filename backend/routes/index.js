@@ -53,12 +53,13 @@ router.get('/api/posts', async function (req, res, next) {
 });
 
 router.get('/register', function (req, res, next) {
-   res.render('login', { nav: false });
+   // Legacy EJS route redirecting to Next.js
+   res.redirect('http://localhost:3000/register');
 });
 
 router.get('/login', function (req, res) {
-   console.log(req.flash("error"));
-   res.render('register', { error: req.flash('error'), nav: false });
+   // Legacy EJS route redirecting to Next.js
+   res.redirect('http://localhost:3000/login');
 });
 
 router.get('/auth/me', authMeLimiter, async function (req, res, next) {
@@ -290,40 +291,44 @@ router.post('/api/addposttoboard', apiAuthLimiter, isLoggedInApi, async function
    }
 });
 
-router.post('/api/register', apiAuthLimiter, function (req, res, next) {
-   const { username, email, fullname, contact, password } = req.body;
-   const userdata = new userModel({
-      username,
-      email,
-      fullname,
-      contact,
-   });
-   userModel.register(userdata, password, (err, registeredUser) => {
-      if (err) {
-         console.error('Error registering user:', err);
-         return res.status(500).json({ error: 'Registration failed', details: err.message });
-      }
-      passport.authenticate('local')(req, res, () => {
-         res.json({ message: "Registration successful", user: registeredUser });
-      });
-   });
+router.post('/api/register', apiAuthLimiter, async function (req, res, next) {
+   try {
+      const { username, email, fullname, contact, password } = req.body;
+      const userdata = new userModel({ username, email, fullname, contact });
+
+      // passport-local-mongoose registers and hashes password
+      userModel.register(userdata, password)
+         .then(function(registeredUser) {
+            passport.authenticate("local")(req, res, function() {
+               res.status(201).json({ success: true, user: req.user, message: "Registration successful" });
+            });
+         })
+         .catch(err => {
+            console.error('Error registering user:', err);
+            res.status(400).json({ error: err.message });
+         });
+   } catch (error) {
+      console.error('Registration error:', error);
+      res.status(500).json({ error: "Registration failed" });
+   }
 });
 
 router.post('/api/login', apiAuthLimiter, function(req, res, next) {
    passport.authenticate('local', function(err, user, info) {
-      if (err) { return res.status(500).json({ error: "Server error" }); }
-      if (!user) { return res.status(401).json({ error: "Invalid credentials" }); }
+      if (err) return res.status(500).json({ error: "Server error" });
+      if (!user) return res.status(401).json({ error: "Invalid username or password" });
+
       req.logIn(user, function(err) {
-         if (err) { return res.status(500).json({ error: "Server error" }); }
-         return res.json({ message: "Login successful", user });
+         if (err) return res.status(500).json({ error: "Login failed" });
+         return res.status(200).json({ success: true, user: req.user, message: "Login successful" });
       });
    })(req, res, next);
 });
 
-router.post('/api/logout', apiAuthLimiter, function (req, res, next) {
+router.get('/api/logout', apiAuthLimiter, function (req, res, next) {
    req.logout(function (err) {
-      if (err) { return res.status(500).json({ error: "Server error" }); }
-      res.json({ message: "Logout successful" });
+      if (err) return next(err);
+      res.status(200).json({ message: "Logged out successfully" });
    });
 });
 
@@ -338,7 +343,7 @@ function isLoggedInApi(req, res, next) {
    if (req.isAuthenticated()) {
       return next();
    }
-   res.status(401).json({ error: "Unauthorized" });
+   res.status(401).json({ error: "You must be logged in" });
 }
 
 module.exports = router;
