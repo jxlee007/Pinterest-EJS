@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: '', // Using proxy via next.config.mjs rewrites
+  baseURL: 'http://localhost:3000',
   withCredentials: true,
 });
 

@@ -314,6 +314,7 @@ router.post('/api/register', apiAuthLimiter, async function (req, res, next) {
 });
 
 router.post('/api/login', apiAuthLimiter, function(req, res, next) {
+   console.log("Request Body:", req.body);
    passport.authenticate('local', function(err, user, info) {
       if (err) return res.status(500).json({ error: "Server error" });
       if (!user) return res.status(401).json({ error: "Invalid username or password" });
