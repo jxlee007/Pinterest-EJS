@@ -10,36 +10,44 @@ export default function PostCard({ post, onDelete, showDelete }) {
   };
 
   return (
-    <div className="card relative bg-white rounded-lg overflow-hidden group">
-      <Link href={`/post/${post._id}`}>
-        <Image
-          src={`http://localhost:5000/images/uploads/${post.postImage}`}
-          alt="image"
-          width={400}
-          height={300}
-          className="h-64 w-full object-cover"
-          unoptimized
-        />
-        <div className="flex justify-between bg-black bg-opacity-40 text-white -mt-16 px-4 py-1.5 rounded-b-lg absolute w-full bottom-0">
-          <span>
-            <h6 className="mt-2 text-sm">{post.title}</h6>
-            <h5 className="text-xs">{formatDate(post.createdAt)}</h5>
-          </span>
-          {showDelete && (
-            <span onClick={(e) => e.preventDefault()}>
-              <button
-                onClick={(e) => { e.preventDefault(); onDelete(post._id); }}
-                className="delete-post bg-red-600 hover:text-red-600 text-sm hover:bg-slate-100 border border-slate-200 rounded-lg font-medium px-4 py-2 mt-1 inline-flex space-x-1 items-center z-10 relative"
-              >
-                <span className="w-4 h-4 text-current">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                  </svg>
-                </span>
-                <span>Delete</span>
-              </button>
-            </span>
-          )}
+    <div className="card-container break-inside-avoid mb-4 group relative">
+      <Link href={`/post/${post._id}`} className="block">
+        <div className="relative overflow-hidden rounded-2xl bg-zinc-800 transition-all duration-300 group-hover:brightness-90">
+          <Image
+            src={`http://localhost:5000/images/uploads/${post.postImage}`}
+            alt={post.title}
+            width={400}
+            height={500}
+            className="w-full h-auto object-cover"
+            unoptimized
+          />
+          
+          {/* Hover Overlay for Desktop */}
+          <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-all duration-300 flex items-start justify-end p-3 opacity-0 group-hover:opacity-100">
+             {showDelete && (
+                <button
+                  onClick={(e) => { e.preventDefault(); onDelete(post._id); }}
+                  className="bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors shadow-lg"
+                  title="Delete Post"
+                >
+                  <i className="ri-delete-bin-line text-lg"></i>
+                </button>
+              )}
+          </div>
+        </div>
+        
+        <div className="mt-2 px-2">
+          <h6 className="text-sm font-semibold text-zinc-100 truncate">{post.title}</h6>
+          <div className="flex items-center gap-2 mt-1">
+            <div className="size-5 rounded-full bg-zinc-600 flex items-center justify-center text-[10px] font-bold overflow-hidden">
+               {post.user?.profileImage ? (
+                 <Image src={`http://localhost:5000/images/uploads/${post.user.profileImage}`} alt="user" width={20} height={20} unoptimized />
+               ) : (
+                 <span>{post.user?.username?.charAt(0).toUpperCase() || 'U'}</span>
+               )}
+            </div>
+            <span className="text-xs text-zinc-400">{post.user?.username || 'User'}</span>
+          </div>
         </div>
       </Link>
     </div>

@@ -76,19 +76,23 @@ export default function FeedPage() {
   if (!user) return null; // redirecting
 
   return (
-    <div className="container mx-auto px-10 py-8 text-white">
-      <div className="cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+    <div className="container mx-auto px-4 md:px-10 py-8 text-white min-h-screen pb-10 md:pb-8">
+      <div className="columns-2 md:columns-3 lg:columns-4 xl:columns-5 gap-4 space-y-4">
         {posts.map((post, index) => {
           if (posts.length === index + 1) {
-            return <div ref={lastPostElementRef} key={post._id}><PostCard post={post} onDelete={handleDelete} showDelete={true} /></div>
+            return <div ref={lastPostElementRef} key={post._id} className="break-inside-avoid"><PostCard post={post} onDelete={handleDelete} showDelete={true} /></div>
           } else {
-            return <PostCard key={post._id} post={post} onDelete={handleDelete} showDelete={true} />
+            return <div key={post._id} className="break-inside-avoid"><PostCard post={post} onDelete={handleDelete} showDelete={true} /></div>
           }
         })}
       </div>
-      {loading && <p className="text-center text-gray-400 mt-4">Loading more posts...</p>}
-      {!loading && posts.length === 0 && <p className="text-gray-400">No posts yet.</p>}
-      {!loading && posts.length > 0 && !hasMore && <p className="text-center text-gray-400 mt-4">You have seen all posts.</p>}
+      {loading && (
+        <div className="flex justify-center mt-10">
+          <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-red-500"></div>
+        </div>
+      )}
+      {!loading && posts.length === 0 && <p className="text-gray-400 text-center mt-20 text-lg">No posts yet. Start by creating one!</p>}
+      {!loading && posts.length > 0 && !hasMore && <p className="text-center text-gray-400 mt-10 pb-10">You have reached the end of the feed.</p>}
     </div>
   );
 }

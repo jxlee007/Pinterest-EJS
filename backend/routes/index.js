@@ -57,12 +57,12 @@ router.get('/api/posts', async function (req, res, next) {
 
 router.get('/register', function (req, res, next) {
    // Legacy EJS route redirecting to Next.js
-   res.redirect('http://localhost:3000/register');
+   res.redirect('http://localhost:3001/register');
 });
 
 router.get('/login', function (req, res) {
    // Legacy EJS route redirecting to Next.js
-   res.redirect('http://localhost:3000/login');
+   res.redirect('http://localhost:3001/login');
 });
 
 router.get('/auth/me', authMeLimiter, async function (req, res, next) {
@@ -376,7 +376,7 @@ router.post('/api/login', apiAuthLimiter, async function(req, res, next) {
 });
 
 
-router.get('/api/logout', apiAuthLimiter, function (req, res, next) {
+router.post('/api/logout', apiAuthLimiter, function (req, res, next) {
    req.logout(function (err) {
       if (err) return next(err);
       res.status(200).json({ message: "Logged out successfully" });

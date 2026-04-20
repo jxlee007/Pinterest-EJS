@@ -40,51 +40,133 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="relative">
-      <Marquee />
-      <div className="container w-full h-screen relative flex justify-center items-center m-auto">
-        <span className="flex flex-row items-center overflow-hidden w-full max-w-[400px]">
-          {step === 1 ? (
-            <div id="div1" className="flex flex-col mx-7 items-center h-fit sm:bg-white bg-transparent px-4 md:px-12 py-8 md:py-4 rounded-3xl w-full text-black">
-              <span className="flex justify-start px-8 items-center border-b-2 w-[130%]">
-                <Link href="/"><i className="ri-arrow-left-line"></i></Link>
-                <h1 className="py-4 mx-11 w-48 mb-2 text-xl sm:text-black text-white text-center tracking-tight capitalize font-semibold leading-none">
-                  Create New Account
-                </h1>
-              </span>
-              <form className="my-4 w-full" onSubmit={handleNextStep}>
-                <input className="block border-2 border-slate-300 bg-slate-200 rounded-xl my-2 w-full px-2 py-2" type="text" name="fullname" placeholder="Full name" value={formData.fullname} onChange={handleChange} required />
-                <input className="block border-2 rounded-xl border-slate-300 bg-slate-200 my-2 w-full px-1 py-2" type="email" name="email" placeholder="Email Address" value={formData.email} onChange={handleChange} required />
-                <button type="submit" className="block border-2 rounded-full w-full py-2 bg-red-600 text-white font-bold cursor-pointer">Continue</button>
-                <p className="text-xs font-semibold mt-5 text-center w-9/12 mx-auto text-black">
-                  By continuing, you agree to Pinterest's Terms of Service and acknowledge you've read our Privacy Policy. Notice at collection.
-                </p>
-              </form>
-              <Link className="block text-center text-m font-semibold sm:text-zinc-700 text-white" href="/login">
-                Already on Pinterest? <strong>Sign In</strong>
-              </Link>
+    <div className="fixed inset-0 w-full h-screen overflow-hidden flex items-center justify-center p-4">
+      <div className="fixed inset-0 z-0">
+        <Marquee />
+      </div>
+      
+      {/* Background Overlay */}
+      <div className="fixed inset-0 bg-black/40 z-10 backdrop-blur-[2px]" />
+
+      <div className="relative z-20 w-full max-w-md animate-fade-in">
+        <div className="glass-dark p-8 rounded-[2.5rem] shadow-2xl border border-white/10">
+          <div className="flex flex-col items-center mb-6">
+            <div className="w-12 h-12 bg-primary rounded-full flex items-center justify-center mb-4">
+              <i className="ri-pinterest-fill text-3xl text-white"></i>
             </div>
-          ) : (
-            <div id="div2" className="flex flex-col mx-7 items-center h-fit sm:bg-white bg-transparent px-4 md:px-12 py-8 md:py-4 rounded-3xl w-full text-black">
-              <span className="flex justify-start px-8 items-center border-b-2 w-[130%]">
-                <button type="button" onClick={() => setStep(1)}><i className="ri-arrow-left-line"></i></button>
-                <h1 className="py-4 mx-11 w-48 mb-2 text-xl sm:text-black text-white text-center tracking-tight capitalize font-semibold leading-none">
-                  Create New Account
-                </h1>
-              </span>
-              {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
-              <form className="my-4 w-full" onSubmit={handleSubmit}>
-                <input className="block border-2 border-slate-300 bg-slate-200 rounded-xl my-2 w-full px-2 py-2" required type="text" name="username" placeholder="Username" value={formData.username} onChange={handleChange} />
-                <input className="block border-2 rounded-xl border-slate-300 bg-slate-200 mb-1 w-full px-1 py-2" required type="password" name="password" placeholder="Password" value={formData.password} onChange={handleChange} />
-                <input className="block border-2 rounded-xl border-slate-300 bg-slate-200 my-2 w-full px-1 py-2" required type="tel" name="contact" placeholder="Contact" value={formData.contact} onChange={handleChange} />
-                <input className="block border-2 rounded-full my-4 w-full px-1 py-2 bg-red-600 text-white font-bold cursor-pointer" type="submit" value="Confirm" />
-                <p className="text-xs font-semibold mt-5 text-center w-9/12 mx-auto text-black">
-                  By continuing, you agree to Pinterest's Terms of Service and acknowledge you've read our Privacy Policy. Notice at collection.
-                </p>
-              </form>
+            <h1 className="text-3xl font-bold tracking-tight text-white text-center">
+              Create New Account
+            </h1>
+            <p className="text-zinc-400 mt-2 text-sm">
+              {step === 1 ? 'Start with your basics' : 'Finish your profile'}
+            </p>
+          </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 text-red-500 p-3 rounded-xl mb-6 text-sm flex items-center gap-2">
+              <i className="ri-error-warning-line"></i>
+              {error}
             </div>
           )}
-        </span>
+
+          <div className="relative overflow-hidden">
+            <div className={`transition-all duration-500 transform ${step === 2 ? '-translate-x-full opacity-0 absolute pointer-events-none' : 'translate-x-0 opacity-100'}`}>
+              <form onSubmit={handleNextStep} className="space-y-4">
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-400 ml-1">Full Name</label>
+                  <input
+                    className="w-full glass-light rounded-2xl px-4 py-3 text-white placeholder:text-zinc-500 border-white/5 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none"
+                    type="text"
+                    name="fullname"
+                    placeholder="Enter your full name"
+                    value={formData.fullname}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-400 ml-1">Email Address</label>
+                  <input
+                    className="w-full glass-light rounded-2xl px-4 py-3 text-white placeholder:text-zinc-500 border-white/5 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none"
+                    type="email"
+                    name="email"
+                    placeholder="Enter your email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-full transition-all transform hover:scale-[1.02] active:scale-[0.98] mt-4 shadow-lg shadow-primary/20 flex items-center justify-center gap-2"
+                >
+                  Continue
+                  <i className="ri-arrow-right-line"></i>
+                </button>
+              </form>
+            </div>
+
+            <div className={`transition-all duration-500 transform ${step === 1 ? 'translate-x-full opacity-0 absolute pointer-events-none' : 'translate-x-0 opacity-100'}`}>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <button 
+                  type="button" 
+                  onClick={() => setStep(1)}
+                  className="flex items-center gap-1 text-xs font-bold text-zinc-400 hover:text-white transition-colors mb-2"
+                >
+                  <i className="ri-arrow-left-s-line"></i> Back to basics
+                </button>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-400 ml-1">Username</label>
+                  <input
+                    className="w-full glass-light rounded-2xl px-4 py-3 text-white placeholder:text-zinc-500 border-white/5 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none"
+                    type="text"
+                    name="username"
+                    placeholder="Choose a username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-400 ml-1">Password</label>
+                  <input
+                    className="w-full glass-light rounded-2xl px-4 py-3 text-white placeholder:text-zinc-500 border-white/5 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none"
+                    type="password"
+                    name="password"
+                    placeholder="Create a password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-xs font-semibold text-zinc-400 ml-1">Contact Number</label>
+                  <input
+                    className="w-full glass-light rounded-2xl px-4 py-3 text-white placeholder:text-zinc-500 border-white/5 focus:border-primary/50 focus:ring-1 focus:ring-primary/50 transition-all outline-none"
+                    type="tel"
+                    name="contact"
+                    placeholder="Your contact number"
+                    value={formData.contact}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-full transition-all transform hover:scale-[1.02] active:scale-[0.98] mt-4 shadow-lg shadow-primary/20"
+                >
+                  Create account
+                </button>
+              </form>
+            </div>
+          </div>
+
+          <div className="mt-8 pt-6 border-t border-white/5 text-center">
+            <Link href="/login" className="text-sm font-semibold text-zinc-400 hover:text-white transition-colors">
+              Already on Pinterest? <span className="text-primary hover:underline ml-1">Sign In</span>
+            </Link>
+          </div>
+        </div>
       </div>
     </div>
   );

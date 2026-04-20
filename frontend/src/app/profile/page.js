@@ -1,17 +1,27 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
 import { userApi } from '@/services/user.api';
 import { useAuth } from '@/context/AuthContext';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
 export default function ProfilePage() {
+  return (
+    <Suspense fallback={<div className="text-center mt-20 text-white">Loading Profile...</div>}>
+      <ProfileContent />
+    </Suspense>
+  );
+}
+
+function ProfileContent() {
   const { user, loading: authLoading } = useAuth();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -20,6 +30,13 @@ export default function ProfilePage() {
       fetchProfile();
     }
   }, [user, authLoading, router]);
+
+  useEffect(() => {
+    const action = searchParams.get('action');
+    if (action === 'create-board') {
+      setShowBoardModal(true);
+    }
+  }, [searchParams]);
 
   const fetchProfile = async () => {
     try {
@@ -146,40 +163,70 @@ export default function ProfilePage() {
       </div>
 
       {showBoardModal && (
-        <div id="board" className="absolute inset-y-0 bg-black/50 w-full flex items-center justify-center z-50">
-          <form onSubmit={handleCreateBoard} className="bg-white text-black border-2 border-black -mt-40 w-1/3 p-4 rounded-3xl">
-              <h1 className="text-2xl mb-2">Create New Board</h1>
-              <hr className="border-1 border-black mb-6" />
-
-              <label htmlFor="boardname" className="m-2 block">Board Name</label>
-              <div className="relative mb-12">
-                <input
-                  type="text"
-                  id="boardname"
-                  value={boardName}
-                  onChange={(e) => setBoardName(e.target.value)}
-                  className="peer py-3 px-4 ps-11 block w-full bg-gray-200 border-transparent rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none outline-none"
-                  placeholder="Enter name"
-                  required
-                />
-                <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-4 peer-disabled:opacity-50 peer-disabled:pointer-events-none">
-                  <svg className="flex-shrink-0 w-4 h-4 text-black" width="30" height="30" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
-                      <path d="M3 13H11V3H3V13ZM3 21H11V15H3V21ZM13 21H21V11H13V21ZM13 3V9H21V3H13Z" fill="currentColor"></path>
-                  </svg>
-                </div>
+        <div className="fixed inset-0 z-[600] flex items-center justify-center p-0 md:p-4">
+          {/* Backdrop */}
+          <div 
+            className="absolute inset-0 bg-black/80 backdrop-blur-md transition-opacity animate-fade-in"
+            onClick={() => setShowBoardModal(false)}
+          ></div>
+          
+          {/* Modal / Bottom Sheet */}
+          <form 
+            onSubmit={handleCreateBoard} 
+            className="relative w-full md:max-w-md bg-zinc-900 md:bg-white text-white md:text-black p-8 rounded-t-[2.5rem] md:rounded-[2.5rem] shadow-2xl animate-slide-up md:animate-scale-in self-end md:self-center border-t border-white/10 md:border-none"
+          >
+              <div className="w-12 h-1.5 bg-zinc-700 md:hidden rounded-full mx-auto mb-6 opacity-50"></div>
+              
+              <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl md:text-2xl font-bold font-['Gilroy'] tracking-tight">Create Board</h1>
+                <button type="button" onClick={() => setShowBoardModal(false)} className="hidden md:flex text-zinc-400 hover:text-black transition-colors p-2">
+                  <i className="ri-close-line text-2xl"></i>
+                </button>
               </div>
+              
+              <div className="space-y-6">
+                <div>
+                  <label htmlFor="boardname" className="text-xs font-bold text-zinc-500 uppercase tracking-widest mb-3 block ml-1">Board Name</label>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      id="boardname"
+                      value={boardName}
+                      onChange={(e) => setBoardName(e.target.value)}
+                      className="py-5 px-6 ps-14 block w-full bg-zinc-800 md:bg-zinc-100 border-transparent rounded-[1.5rem] text-lg focus:ring-2 focus:ring-red-500 transition-all outline-none text-white md:text-black placeholder:text-zinc-600"
+                      placeholder="e.g., Summer Vibes 2024"
+                      autoFocus
+                      required
+                    />
+                    <div className="absolute inset-y-0 start-0 flex items-center pointer-events-none ps-6">
+                      <i className="ri-layout-grid-line text-zinc-500 text-xl"></i>
+                    </div>
+                  </div>
+                </div>
 
-              <div className="gap-3 flex justify-end">
-                  <button type="submit" className="bg-red-700 rounded-full text-white py-2 px-6">Save</button>
-                  <button type="button" onClick={() => setShowBoardModal(false)} className="bg-red-700 rounded-full text-white py-2 px-6">Cancel</button>
+                <div className="flex flex-col md:flex-row gap-4 pt-4">
+                    <button 
+                      type="submit" 
+                      className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-5 px-8 rounded-2xl transition-all shadow-lg shadow-red-600/20 active:scale-95"
+                    >
+                      Create Board
+                    </button>
+                    <button 
+                      type="button" 
+                      onClick={() => setShowBoardModal(false)} 
+                      className="w-full bg-zinc-800 md:bg-zinc-100 hover:bg-zinc-700 md:hover:bg-zinc-200 text-zinc-300 md:text-zinc-800 font-bold py-5 px-8 rounded-2xl transition-all"
+                    >
+                      Cancel
+                    </button>
+                </div>
               </div>
           </form>
         </div>
       )}
 
-      {/* Button to open the create board modal, we place it somewhere accessible or let the Navbar 'Create Board' open it. We'll add a floating button for easy access matching original layout expectation if needed, or rely on Navbar. Let's add a simple one just in case */}
+      {/* Button to open the create board modal */}
       <div className="fixed bottom-10 right-10">
-        <button onClick={() => setShowBoardModal(true)} className="w-14 h-14 bg-red-600 rounded-full text-white text-3xl shadow-lg hover:bg-red-700 flex items-center justify-center">
+        <button onClick={() => setShowBoardModal(true)} className="w-14 h-14 bg-red-600 rounded-full text-white text-3xl shadow-lg hover:bg-red-700 flex items-center justify-center transition-transform active:scale-90">
           +
         </button>
       </div>
