@@ -30,7 +30,7 @@ This project is a Pinterest clone developed using MongoDB Atlas, EJS, Multer.js,
 - MongoDB Atlas: [Official Documentation](https://www.mongodb.com/cloud/atlas)
 - Deployment: [On Render](https://render.com/)
 - Inspiration: [Original Content](https://youtu.be/y-dkusalYw0?si=OXNbm2uhkfZubjCU)
-- Shoutout To: [The Sheryianscoding School](https://www.youtube.com/@thesheryianscodingschool)
+- Shoutout To: [The Sheryianscoding School](https://www.youtube.com/@sheryians)
 
 ## Author
 [Jagmohan Singh Malhi](https://www.linkedin.com/in/jagmohan-singh-malhi-a67805243/)
