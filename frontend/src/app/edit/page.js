@@ -91,12 +91,12 @@ export default function EditProfilePage() {
             <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-500 flex items-center justify-center text-3xl text-white font-bold mb-2">
                {profile.profileImage ? (
                   <Image
-                    src={`//${profile.profileImage}`}
+                    src={`http://localhost:5000/images/uploads/${profile.profileImage}`}
                     alt="Profile"
                     width={128}
                     height={128}
                     className="object-cover w-full h-full"
-
+                    unoptimized
                   />
                 ) : (
                   profile.username.charAt(0).toUpperCase()

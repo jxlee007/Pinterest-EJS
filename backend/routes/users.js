@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  password: String, // Handled by passport-local-mongoose
+
   posts: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Post' }],
   boards: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Board' }],
   profileImage: String,

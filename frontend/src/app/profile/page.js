@@ -91,12 +91,12 @@ export default function ProfilePage() {
           <div className="w-32 h-32 bg-zinc-200 rounded-full overflow-hidden flex items-center justify-center">
             {profile.profileImage ? (
               <Image
-                src={`//${profile.profileImage}`}
+                src={`http://localhost:5000/images/uploads/${profile.profileImage}`}
                 alt="profile"
                 width={128}
                 height={128}
                 className="w-full h-full object-cover"
-
+                unoptimized
               />
             ) : (
               <span className="text-4xl font-bold text-gray-500">{profile.username.charAt(0).toUpperCase()}</span>
@@ -124,11 +124,11 @@ export default function ProfilePage() {
                       {board.posts && board.posts.length > 0 ? (
                           <Image
                             className="h-full w-full object-cover"
-                            src={`//${board.posts[0].postImage}`}
+                            src={`http://localhost:5000/images/uploads/${board.posts[0].postImage}`}
                             alt={board.name}
                             width={208}
                             height={160}
-
+                            unoptimized
                           />
                       ) : (
                          <span className="text-gray-500">Empty</span>

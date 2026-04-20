@@ -5,18 +5,18 @@ GREEN='\033[0;32m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}Cleaning up existing processes on ports 5000 and 3000...${NC}"
+echo -e "${BLUE}Cleaning up existing processes on ports 5000 and 3001...${NC}"
 fuser -k 5000/tcp 2>/dev/null
-fuser -k 3000/tcp 2>/dev/null
+fuser -k 3001/tcp 2>/dev/null
 
 echo -e "${GREEN}Starting Backend on port 5000...${NC}"
 cd backend
 PORT=5000 npm start &
 BACKEND_PID=$!
 
-echo -e "${GREEN}Starting Frontend on port 3000...${NC}"
+echo -e "${GREEN}Starting Frontend on port 3001...${NC}"
 cd ../frontend
-PORT=3000 npm run dev &
+PORT=3001 npm run dev &
 FRONTEND_PID=$!
 
 # Function to stop both processes

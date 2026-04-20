@@ -8,6 +8,9 @@ const moment = require('moment');
 const upload = require('./multer');
 const passport = require('passport');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+const sharp = require('sharp');
 
 const apiAuthLimiter = rateLimit({
    windowMs: 15 * 60 * 1000,
@@ -15,7 +18,7 @@ const apiAuthLimiter = rateLimit({
    message: { error: "Too many requests, please try again later." }
 });
 
-const localStrategy = require("passport-local");
+
 const users = require('./users');
 
 const apiWriteLimiter = rateLimit({
@@ -24,7 +27,7 @@ const apiWriteLimiter = rateLimit({
    standardHeaders: true,
    legacyHeaders: false,
 });
-passport.use(new localStrategy(userModel.authenticate()));
+passport.use(userModel.createStrategy());
 
 const authMeLimiter = rateLimit({
    windowMs: 15 * 60 * 1000, // 15 minutes
@@ -110,8 +113,18 @@ router.get('/edit', isLoggedIn, async function (req, res, next) {
 
 router.post('/api/fileupload', apiAuthLimiter, isLoggedInApi, upload.single('profile-image'), async function (req, res, next) {
    try {
+      if (!req.file) {
+         return res.status(400).json({ error: "No file uploaded" });
+      }
+      const filename = `${uuidv4()}.webp`;
+      const uploadPath = path.join(__dirname, '../public/images/uploads', filename);
+
+      await sharp(req.file.buffer)
+         .webp({ quality: 80 })
+         .toFile(uploadPath);
+
       const user = req.user;
-      user.profileImage = req.file.filename;
+      user.profileImage = filename;
       await user.save();
       res.json({ user, message: "Profile image updated" });
    } catch (error) {
@@ -225,11 +238,19 @@ router.get('/api/post/:postId', apiAuthLimiter, isLoggedInApi, async function (r
 router.post('/api/createpost', apiWriteLimiter, isLoggedInApi, upload.single('postimage'), async function (req, res, next) {
    try {
       if (!req.file) {
-         return res.status(400).send("No Files were uploaded.");
+         return res.status(400).json({ error: "No Files were uploaded." });
       }
+
+      const filename = `${uuidv4()}.webp`;
+      const uploadPath = path.join(__dirname, '../public/images/uploads', filename);
+
+      await sharp(req.file.buffer)
+         .webp({ quality: 80 })
+         .toFile(uploadPath);
+
       const user = req.user;
       const post = await postModel.create({
-         postImage: req.file.filename,
+         postImage: filename,
          desc: req.body.description,
          title: req.body.title,
          user: user._id,
@@ -313,18 +334,47 @@ router.post('/api/register', apiAuthLimiter, async function (req, res, next) {
    }
 });
 
-router.post('/api/login', apiAuthLimiter, function(req, res, next) {
-   console.log("Request Body:", req.body);
+router.post('/api/login', apiAuthLimiter, async function(req, res, next) {
+   let { username } = req.body;
+   console.log("Passport attempting login for:", username);
+
+   // Check if the user is trying to log in with an email
+   if (username && username.includes('@')) {
+      try {
+         const userByEmail = await userModel.findOne({ email: username });
+         if (userByEmail) {
+            username = userByEmail.username;
+            console.log("Resolved email to username:", username);
+         }
+      } catch (err) {
+         console.error("Error finding user by email:", err);
+      }
+   }
+
+   // Update req.body.username so passport-local-mongoose finds it
+   req.body.username = username;
+
    passport.authenticate('local', function(err, user, info) {
-      if (err) return res.status(500).json({ error: "Server error" });
-      if (!user) return res.status(401).json({ error: "Invalid username or password" });
+      if (err) {
+         console.error("Passport Auth Error:", err);
+         return res.status(500).json({ error: "Server error" });
+      }
+      if (!user) {
+         console.log("Passport Auth Failed:", info.message);
+         return res.status(401).json({ error: info.message || "Invalid username or password" });
+      }
 
       req.logIn(user, function(err) {
-         if (err) return res.status(500).json({ error: "Login failed" });
-         return res.status(200).json({ success: true, user: req.user, message: "Login successful" });
+         if (err) {
+            console.error("Login session failed:", err);
+            return res.status(500).json({ error: "Login failed" });
+         }
+         console.log("Login successful for:", user.username);
+         return res.status(200).json({ success: true, user: user, message: "Login successful" });
       });
    })(req, res, next);
 });
+
 
 router.get('/api/logout', apiAuthLimiter, function (req, res, next) {
    req.logout(function (err) {

@@ -35,12 +35,12 @@ export default function PostDetailPage() {
       <div className="bg-white rounded-3xl flex flex-col md:flex-row overflow-hidden max-w-4xl w-full text-black">
         <div className="w-full md:w-1/2">
           <Image
-            src={`//${post.postImage}`}
+            src={`http://localhost:5000/images/uploads/${post.postImage}`}
             alt={post.title}
             width={600}
             height={600}
             className="object-cover w-full h-full min-h-[400px]"
-
+            unoptimized
           />
         </div>
         <div className="w-full md:w-1/2 p-8">
@@ -52,12 +52,12 @@ export default function PostDetailPage() {
                 <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-300">
                   {post.user.profileImage ? (
                     <Image
-                      src={`//${post.user.profileImage}`}
+                      src={`http://localhost:5000/images/uploads/${post.user.profileImage}`}
                       alt={post.user.username}
                       width={48}
                       height={48}
                       className="object-cover w-full h-full"
-
+                      unoptimized
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center font-bold">

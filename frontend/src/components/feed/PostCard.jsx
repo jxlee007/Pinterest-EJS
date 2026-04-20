@@ -3,7 +3,10 @@ import Link from 'next/link';
 
 export default function PostCard({ post, onDelete, showDelete = false }) {
   // Use postImage from backend uploads
-  const imageUrl = `//${post.postImage}`;
+  const BACKEND_URL = "http://localhost:5000";
+  const imageUrl = post.postImage 
+    ? `${BACKEND_URL}/images/uploads/${post.postImage}`
+    : "/placeholder.png";
 
   return (
     <div className="card relative bg-white rounded-lg overflow-hidden group">
@@ -14,7 +17,7 @@ export default function PostCard({ post, onDelete, showDelete = false }) {
           width={400}
           height={300}
           className="h-64 w-full object-cover cursor-pointer"
-           // Allow local images without complex config during dev
+          unoptimized
         />
       </Link>
 
