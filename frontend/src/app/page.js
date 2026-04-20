@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { postApi } from '@/services/post.api';
-import PostCard from '@/components/feed/PostCard';
+import PostCard from '@/components/feed/PostCard.jsx';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 
@@ -76,9 +76,8 @@ export default function FeedPage() {
   if (!user) return null; // redirecting
 
   return (
-    <div className="container mx-auto px-10 py-8">
-      <h1 className="text-2xl font-bold mb-6 text-white">Your Feed</h1>
-      <div className="cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+    <div className="container mx-auto px-10 py-8 text-white">
+      <div className="cards grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {posts.map((post, index) => {
           if (posts.length === index + 1) {
             return <div ref={lastPostElementRef} key={post._id}><PostCard post={post} onDelete={handleDelete} showDelete={true} /></div>

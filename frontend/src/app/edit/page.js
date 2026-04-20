@@ -5,18 +5,16 @@ import { userApi } from '@/services/user.api';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export default function EditProfilePage() {
   const { user, loading: authLoading } = useAuth();
-  const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [formData, setFormData] = useState({
     username: '',
-    email: '',
     fullname: '',
-    phone: '',
+    email: '',
+    phone: ''
   });
+  const [loading, setLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -30,12 +28,12 @@ export default function EditProfilePage() {
   const fetchProfile = async () => {
     try {
       const res = await userApi.getProfile();
-      setProfile(res.data.user);
+      const profile = res.data.user;
       setFormData({
-        username: res.data.user.username || '',
-        email: res.data.user.email || '',
-        fullname: res.data.user.fullname || '',
-        phone: res.data.user.contact || '',
+        username: profile.username || '',
+        fullname: profile.fullname || '',
+        email: profile.email || '',
+        phone: profile.contact || '' // Assuming 'contact' is used for phone in EJS backend
       });
     } catch (error) {
       console.error('Failed to fetch profile', error);
@@ -51,100 +49,85 @@ export default function EditProfilePage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
+      // Send form data logic
+      // In the EJS it posts to /edit
+      // If userApi.updateProfile doesn't exist, we fallback, but we'll try to implement or mock it.
+      // For this frontend conversion, we just construct the fetch.
+      // EJS form submitted natively.
       await userApi.editProfile(formData);
       router.push('/profile');
     } catch (error) {
       console.error('Failed to update profile', error);
-      alert('Failed to update profile.');
+      alert('Failed to update profile');
     }
   };
 
-  const handleImageUpload = async (e) => {
-    if (e.target.files && e.target.files[0]) {
-      const imgData = new FormData();
-      imgData.append('profile-image', e.target.files[0]);
-      try {
-        await userApi.uploadProfileImage(imgData);
-        fetchProfile(); // reload profile to show new image
-      } catch (error) {
-        console.error('Failed to upload image', error);
-        alert('Failed to upload image.');
-      }
-    }
-  };
-
-  if (authLoading || loading) return <div className="text-center mt-20">Loading...</div>;
-  if (!user || !profile) return null;
+  if (authLoading || loading) return <div className="text-center mt-20 text-white">Loading...</div>;
 
   return (
-    <div className="w-full min-h-screen bg-zinc-800 px-10 py-5">
-      <div className="w-full flex justify-between items-center mb-8">
-        <h1 className="text-xl text-white">Edit Profile</h1>
-        <Link href="/profile" className="px-3 py-2 bg-red-700 text-white rounded-md">Cancel</Link>
-      </div>
-      <hr className="mb-8 border-gray-600" />
-
-      <div className="flex flex-col items-center">
-        <p className="text-white mb-4">Edit Profile Image</p>
-        <div className="relative mb-8">
-          <label htmlFor="fileInput" className="cursor-pointer flex flex-col items-center">
-            <div className="w-32 h-32 rounded-full overflow-hidden bg-gray-500 flex items-center justify-center text-3xl text-white font-bold mb-2">
-               {profile.profileImage ? (
-                  <Image
-                    src={`http://localhost:5000/images/uploads/${profile.profileImage}`}
-                    alt="Profile"
-                    width={128}
-                    height={128}
-                    className="object-cover w-full h-full"
-                    unoptimized
-                  />
-                ) : (
-                  profile.username.charAt(0).toUpperCase()
-                )}
-            </div>
-            <span className="text-blue-400 text-sm">Change picture</span>
-          </label>
-          <input type="file" id="fileInput" className="hidden" onChange={handleImageUpload} />
-        </div>
-
-        <form onSubmit={handleSubmit} className="w-full max-w-md flex flex-col gap-4">
-          <input
-            type="text"
-            name="username"
-            placeholder="Username"
-            value={formData.username}
-            onChange={handleChange}
-            className="px-3 py-2 border-2 rounded-lg text-black bg-white"
-          />
-          <input
-            type="text"
-            name="fullname"
-            placeholder="Full Name"
-            value={formData.fullname}
-            onChange={handleChange}
-            className="px-3 py-2 border-2 rounded-lg text-black bg-white"
-          />
-          <input
-            type="email"
-            name="email"
-            placeholder="Email"
-            value={formData.email}
-            onChange={handleChange}
-            className="px-3 py-2 border-2 rounded-lg text-black bg-white"
-          />
-          <input
-            type="tel"
-            name="phone"
-            placeholder="Contact Number"
-            value={formData.phone}
-            onChange={handleChange}
-            className="px-3 py-2 border-2 rounded-lg text-black bg-white"
-          />
-
-          <button type="submit" className="mt-4 px-3 py-2 bg-red-700 text-white font-bold rounded-lg hover:bg-red-800 transition">
-            Save
-          </button>
-        </form>
+    <div className="bg-white min-h-[calc(100vh-60px)] py-6">
+      <div className="max-w-3xl mx-auto py-6 sm:px-6 lg:px-8 bg-white text-black">
+          <div className="px-4 py-6 sm:px-0">
+              <h1 className="text-3xl font-semibold">Edit Profile</h1>
+              <form onSubmit={handleSubmit} className="mt-6 space-y-6">
+                  <div>
+                      <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
+                      <input
+                        type="text"
+                        placeholder="Username"
+                        name="username"
+                        id="username"
+                        className="block border-2 border-slate-300 bg-slate-200 rounded-xl my-2 w-full px-2 py-2"
+                        value={formData.username}
+                        onChange={handleChange}
+                      />
+                  </div>
+                  <div>
+                      <label htmlFor="fullname" className="block text-sm font-medium text-gray-700">Full Name</label>
+                      <input
+                        type="text"
+                        placeholder="Full Name"
+                        name="fullname"
+                        id="fullname"
+                        className="block border-2 border-slate-300 bg-slate-200 rounded-xl my-2 w-full px-2 py-2"
+                        value={formData.fullname}
+                        onChange={handleChange}
+                      />
+                  </div>
+                  <div>
+                      <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+                      <input
+                        type="email"
+                        placeholder="abc@gmail.com"
+                        name="email"
+                        id="email"
+                        className="block border-2 border-slate-300 bg-slate-200 rounded-xl my-2 w-full px-2 py-2"
+                        value={formData.email}
+                        onChange={handleChange}
+                      />
+                  </div>
+                  <div>
+                      <label htmlFor="phone" className="block text-sm font-medium text-gray-700">Phone Number</label>
+                      <input
+                        type="tel"
+                        placeholder="Contact Number"
+                        name="phone"
+                        id="phone"
+                        className="block border-2 border-slate-300 bg-slate-200 rounded-xl my-2 w-full px-2 py-2"
+                        value={formData.phone}
+                        onChange={handleChange}
+                      />
+                  </div>
+                  <div className="flex gap-4">
+                      <button type="submit" className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                          Update Profile
+                      </button>
+                      <Link href="/profile" className="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                          Cancel
+                      </Link>
+                  </div>
+              </form>
+          </div>
       </div>
     </div>
   );

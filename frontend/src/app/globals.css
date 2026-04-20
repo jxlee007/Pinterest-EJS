@@ -24,3 +24,29 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Custom styles for masonry grid */
+.grid-item {
+  /* Ensure images fill their containers */
+  width: 100%;
+  height: fit-content;
+  object-fit: cover;
+}
+
+/* Marquee styles from welcome.ejs / anim.ejs */
+.marquee {
+  animation: scroll infinite linear 10s;
+}
+
+.marquee:nth-child(odd){
+  animation-direction: reverse;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
