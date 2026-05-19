@@ -4,7 +4,8 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 // setup session
-const expressSession = require('express-session')
+const expressSession = require('express-session');
+const MongoStore = require('connect-mongo');
 // flash setup
 const flash = require('connect-flash');
 // help in deletion
@@ -42,9 +43,12 @@ app.use(expressSession({
   resave: false,
   saveUninitialized: false,
   secret: process.env.SESSION_SECRET || "got shit done",
+  store: MongoStore.create({
+    mongoUrl: process.env.MONGO_URI || "mongodb://127.0.0.1:27017/pinterest-clone"
+  }),
   cookie: {
     sameSite: "lax", // Allows cookie to be sent across localhost ports
-    secure: false,   // Must be false for http://localhost
+    secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
