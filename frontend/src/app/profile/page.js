@@ -108,7 +108,7 @@ function ProfileContent() {
           <div className="w-32 h-32 bg-zinc-200 rounded-full overflow-hidden flex items-center justify-center">
             {profile.profileImage ? (
               <Image
-                src={`http://localhost:5000/images/uploads/${profile.profileImage}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${profile.profileImage}`}
                 alt="profile"
                 width={128}
                 height={128}
@@ -134,7 +134,7 @@ function ProfileContent() {
                       {board.posts && board.posts.length > 0 ? (
                           <Image
                             className="h-full w-full object-cover"
-                            src={`http://localhost:5000/images/uploads/${board.posts[0].postImage}`}
+                            src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${board.posts[0].postImage}`}
                             alt={board.name}
                             width={208}
                             height={160}

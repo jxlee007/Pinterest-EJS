@@ -43,7 +43,7 @@ export default function ShowPostPage() {
       <div className="flex flex-col md:flex-row md:space-x-8">
           <div className="w-full md:w-1/2">
               <Image
-                src={`http://localhost:5000/images/uploads/${post.postImage}`}
+                src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${post.postImage}`}
                 alt="Post Image"
                 className="w-full rounded-lg mb-4 object-cover"
                 width={800}

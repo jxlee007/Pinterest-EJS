@@ -11,7 +11,7 @@ const flash = require('connect-flash');
 const methodOverride = require('method-override');
 
 
-require('dotenv').config({ path: path.join(__dirname, '.env') });
+require('dotenv').config({ path: path.join(__dirname, '../.env') });
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 const passport = require('passport');
@@ -22,7 +22,7 @@ app.set('trust proxy', 1);
 
 // 1. Updated CORS (Match your Next.js Port!)
 app.use(cors({
-  origin: "http://localhost:3001",
+  origin: process.env.FRONTEND_URL || "http://localhost:3001",
   credentials: true,
   methods: ["GET", "POST", "PUT", "DELETE"],
   allowedHeaders: ["Content-Type", "Authorization"]

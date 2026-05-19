@@ -40,7 +40,7 @@ export default function ExplorePage() {
               <Link href={`/post/${post._id}`}>
                 <div
                   className="bg-cover bg-center h-64 rounded-xl relative overflow-hidden"
-                  style={{ backgroundImage: `url('http://localhost:5000/images/uploads/${post.postImage}')` }}
+                  style={{ backgroundImage: `url('${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${post.postImage}')` }}
                 >
                   <div className="absolute bottom-0 left-0 right-0 p-4 bg-black bg-opacity-70 rounded-b-xl">
                     <span className="flex justify-between">

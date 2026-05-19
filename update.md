@@ -176,3 +176,20 @@ I can:
 
 * Show **how to build recommendation system (simple version)**
 * OR give **exact backend logic for all 4 features**
+
+---
+
+Analyze this image and return JSON:
+
+{
+  "caption": string,
+  "tags": string[],
+  "hashtags": string[],
+  "moderation": {
+    "nsfw": boolean,
+    "hate": boolean,
+    "violence": boolean,
+    "dangerous": boolean,
+    "risk_level": "low | medium | high"
+  }
+}

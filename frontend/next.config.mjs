@@ -19,18 +19,19 @@ const nextConfig = {
     ],
   },
   async rewrites() {
+    const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
     return [
       {
         source: '/api/:path*',
-        destination: 'http://localhost:5000/api/:path*', // Proxy to Backend
+        destination: `${API_URL}/api/:path*`, // Proxy to Backend
       },
       {
         source: '/auth/me',
-        destination: 'http://localhost:5000/auth/me', // Proxy to Backend auth
+        destination: `${API_URL}/auth/me`, // Proxy to Backend auth
       },
       {
         source: '/images/:path*',
-        destination: 'http://localhost:5000/images/:path*', // Proxy to Backend static images
+        destination: `${API_URL}/images/:path*`, // Proxy to Backend static images
       }
     ];
   },

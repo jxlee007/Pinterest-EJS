@@ -101,7 +101,7 @@ export default function Navbar() {
                 <span>{user.username}</span>
                 <div className="size-8 ml-3 bg-zinc-400 rounded-full overflow-hidden">
                   {user.profileImage ? (
-                    <Image src={`http://localhost:5000/images/uploads/${user.profileImage}`} alt="profile" width={32} height={32} className="w-full h-full object-cover" unoptimized />
+                    <Image src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${user.profileImage}`} alt="profile" width={32} height={32} className="w-full h-full object-cover" unoptimized />
                   ) : (
                     <span className="w-full h-full flex items-center justify-center text-black font-bold">{user.username.charAt(0).toUpperCase()}</span>
                   )}
@@ -205,7 +205,7 @@ export default function Navbar() {
               <div className="flex items-center gap-4 mb-8 p-4 bg-white/5 rounded-2xl border border-white/10">
                 <div className="size-14 bg-zinc-400 rounded-full overflow-hidden border-2 border-red-500/50">
                   {user.profileImage ? (
-                    <Image src={`http://localhost:5000/images/uploads/${user.profileImage}`} alt="profile" width={56} height={56} className="w-full h-full object-cover" unoptimized />
+                    <Image src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${user.profileImage}`} alt="profile" width={56} height={56} className="w-full h-full object-cover" unoptimized />
                   ) : (
                     <span className="w-full h-full flex items-center justify-center text-black font-bold text-2xl">{user.username.charAt(0).toUpperCase()}</span>
                   )}

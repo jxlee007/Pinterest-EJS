@@ -47,7 +47,7 @@ export default function ShowBoardPage() {
                 <div className="card relative rounded-lg overflow-hidden shadow-md cursor-pointer h-48 bg-zinc-700" >
                     <Image
                       className="w-full h-full object-cover"
-                      src={`http://localhost:5000/images/uploads/${post.postImage}`}
+                      src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${post.postImage}`}
                       alt={post.title}
                       width={300}
                       height={200}

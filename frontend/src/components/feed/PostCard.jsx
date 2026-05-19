@@ -14,7 +14,7 @@ export default function PostCard({ post, onDelete, showDelete }) {
       <Link href={`/post/${post._id}`} className="block">
         <div className="relative overflow-hidden rounded-2xl bg-zinc-800 transition-all duration-300 group-hover:brightness-90">
           <Image
-            src={`http://localhost:5000/images/uploads/${post.postImage}`}
+            src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${post.postImage}`}
             alt={post.title}
             width={400}
             height={500}
@@ -41,7 +41,7 @@ export default function PostCard({ post, onDelete, showDelete }) {
           <div className="flex items-center gap-2 mt-1">
             <div className="size-5 rounded-full bg-zinc-600 flex items-center justify-center text-[10px] font-bold overflow-hidden">
                {post.user?.profileImage ? (
-                 <Image src={`http://localhost:5000/images/uploads/${post.user.profileImage}`} alt="user" width={20} height={20} unoptimized />
+                 <Image src={`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/images/uploads/${post.user.profileImage}`} alt="user" width={20} height={20} unoptimized />
                ) : (
                  <span>{post.user?.username?.charAt(0).toUpperCase() || 'U'}</span>
                )}
