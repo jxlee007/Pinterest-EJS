@@ -1,8 +1,8 @@
-# EJS Project
+# NextJS Project
 Pinterest Clone
 
 ## Overview
-This project is a Pinterest clone developed using MongoDB Atlas, EJS, Multer.js, Node.js, and Express.js. It provides a platform for users to discover images and CRUD functionalities of Pinterest.
+This project is a Pinterest clone developed using MongoDB Atlas, Nextjs(previously EJS), Multer.js, Node.js, and Express.js. It provides a platform for users to discover images and CRUD functionalities of Pinterest.
 
 ## Key Features
 - **Image Upload:** Users can upload images to the platform.
@@ -24,6 +24,7 @@ This project is a Pinterest clone developed using MongoDB Atlas, EJS, Multer.js,
 
 ## Credits
 - EJS: [Official Documentation](https://ejs.co/)
+- Next.js: [Official Website](https://nextjs.org/)
 - Node.js: [Official Website](https://nodejs.org/)
 - Express: [Official Website](https://expressjs.com/)
 - Multer: [GitHub Repository](https://github.com/expressjs/multer)
