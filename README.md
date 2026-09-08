@@ -1,5 +1,5 @@
-# NextJS Project
-Pinterest Clone
+# Pinterest Clone
+NextJS Project
 
 ## Overview
 This project is a Pinterest clone developed using MongoDB Atlas, Nextjs(previously EJS), Multer.js, Node.js, and Express.js. It provides a platform for users to discover images and CRUD functionalities of Pinterest.
